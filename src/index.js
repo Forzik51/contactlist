@@ -1,23 +1,23 @@
 import React from 'react';
-import { Fragment } from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
+//Components
+import ContactList from "./Components/ContactList/ContactList";
 
 const App = () => {
     return (
-        <Fragment>
-            <div class="container">
 
-                <div class="card card-default" id="card_contacts">
-                    <div id="contacts" class="panel-collapse collapse show" aria-expanded="true" style="">
-                        <ul class="list-group pull-down" id="contact-list"></ul>
-                    </div>
+        <div className="container">
+            <h1>Contact Item</h1>
+            <div className="card card-default" id="card_contacts">
+                <div id="contacts" className="panel-collapse collapse show" aria-expanded="true" >
+                    <ContactList />
                 </div>
             </div>
-        </Fragment>);
+        </div>
+    );
 }
 
 ReactDOM.render(<App />, document.getElementById('root'));
-
 
