@@ -8,7 +8,8 @@ class ContactItem extends Component {
         phone: "(097) 777-88-88",
         email: "mike.666@example.com",
         avatar: 16,
-        gender: "men"
+        gender: "men",
+        star:"far fa-star fa-2x"
     };
 
     onRandomAvatar = () =>{
@@ -18,8 +19,21 @@ class ContactItem extends Component {
         });
     }
 
+    onStar = () =>{
+        if (this.state.star==="far fa-star fa-2x") {
+            this.setState({
+               star:"fas fa-star fa-2x"
+            });
+        }
+        else if (this.state.star==="fas fa-star fa-2x"){
+            this.setState({
+                star:"far fa-star fa-2x"
+            });
+        }
+        
+    }
     render() {
-        const { name, address, phone, email, avatar, gender } = this.state;
+        const { name, address, phone, email, avatar, gender,star } = this.state;
         const URL = `https://api.randomuser.me/portraits/${gender}/${avatar}.jpg`;
         return (
             <Fragment>
@@ -43,8 +57,11 @@ class ContactItem extends Component {
                             <span className="text-muted small text-truncate">{email}</span>
                         </div>
                     </div>
+                    <button className="btn btn-success col-3" onClick={this.onRandomAvatar}>Random avatar</button>
+                    <i className={star} aria-hidden="true" onClick={this.onStar}i></i> 
                 </li>
-                <button className="btn btn-success" onClick={this.onRandomAvatar}>Random avatar</button>
+               
+                
             </Fragment>
         );
     }

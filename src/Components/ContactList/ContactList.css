@@ -1,0 +1,11 @@
+.fa-star{
+    width: 36px;
+    height: 36px;
+    float: right;
+    margin-right: 20px;
+}
+.fas{
+    color:yellow;
+    background-color: green;
+    border-radius: 50%;
+}
