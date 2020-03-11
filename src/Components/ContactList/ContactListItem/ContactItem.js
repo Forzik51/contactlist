@@ -3,13 +3,13 @@ import './ContactItem.css';
 
 class ContactItem extends Component {
     state = {
-        name: "Mike Tyson",
-        address: "Harm,Stepana Banderu st.",
-        phone: "(097) 777-88-88",
-        email: "mike.666@example.com",
-        avatar: 16,
-        gender: "men",
-        star:"far fa-star fa-2x"
+        name: this.props.name,
+        address: this.props.address,
+        phone: this.props.phone,
+        email: this.props.email,
+        avatar: this.props.avatar,
+        gender: this.props.gender,
+        star:this.props.star
     };
 
     onRandomAvatar = () =>{
@@ -35,6 +35,7 @@ class ContactItem extends Component {
     render() {
         const { name, address, phone, email, avatar, gender,star } = this.state;
         const URL = `https://api.randomuser.me/portraits/${gender}/${avatar}.jpg`;
+        console.log("Cont item probs =>",this.probs);
         return (
             <Fragment>
                 <li className="list-group-item">
@@ -58,7 +59,7 @@ class ContactItem extends Component {
                         </div>
                     </div>
                     <button className="btn btn-success col-3" onClick={this.onRandomAvatar}>Random avatar</button>
-                    <i className={star} aria-hidden="true" onClick={this.onStar}i></i> 
+                    <i className={star} aria-hidden="true" onClick={this.onStar}></i> 
                 </li>
                
                 
