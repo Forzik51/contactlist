@@ -1,88 +1,212 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
+import React from "react";
+import ReactDOM from "react-dom";
+import uuid from "uuid";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import "./index.css";
 
-//Components
+// Components
 import ContactList from "./Components/ContactList/ContactList";
+import AddContact from "./Components/AddContact/AddContact";
+import Header from "./Components/Header/Header";
+import EditContact from "./Components/EditContact/EditContact";
+import NotFound from "./Components/NotFound/NotFound";
 
 class App extends React.Component {
+  URL = "https://contactlist-c7646.firebaseio.com/List.json";
 
-    state = {
-        Contact: [
-            {
-                id: 1,
-                name: "Mike Tyson",
-                address: "Harm,Stepana Banderu st.",
-                phone: "(097) 777-88-88",
-                email: "mike.666@example.com",
-                avatar: 16,
-                gender: "men",
-                star: "far fa-star fa-2x"
-            },
-            {
-                id:2,
-                name: "Max ",
-                address: "Rivne,Stepana Banderu st.",
-                phone: "(097) 777-88-88",
-                email: "max.666@example.com",
-                avatar: 14,
-                gender: "men",
-                star: "far fa-star fa-2x"
-            },
-            {
-                id:3,
-                name: "Lora ",
-                address: "Harm,Stepana Banderu st.",
-                phone: "(097) 777-88-88",
-                email: "Lora.666@example.com",
-                avatar: 92,
-                gender: "women",
-                star: "far fa-star fa-2x"
-            },
-            {
-                id:4,
-                name: "Jon ",
-                address: "Harm,Stepana Banderu st.",
-                phone: "(097) 777-88-88",
-                email: "mike.666@example.com",
-                avatar: 84,
-                gender: "men",
-                star: "far fa-star fa-2x"
-            },
-            {
-                id:5,
-                name: "Lola ",
-                address: "Harm,Stepana Banderu st.",
-                phone: "(097) 777-88-88",
-                email: "Jon.666@example.com",
-                avatar: 65,
-                gender: "women",
-                star: "far fa-star fa-2x"
-            }
-        ]
-    };
+  componentDidMount() {
+    this.updateContactList();
+  }
 
-    onStarChange = id =>{
-        console.log(id);
+  updateContactList = () => {
+    fetch(this.URL)
+      .then(response => {
+        return response.json();
+      })
+      .then(list => {
+        if(list == null){
+          this.setState({
+            List:[]
+          })
+        }
+        else{
+          this.setState({
+          List: list
+          });
+        }
         
+      })
+      .catch(err => console.log(err));
+  };
+
+  state = {
+    List: [],
+    currentContact: "",
+    findContact: ""
+  };
+
+  onStarChange = id => {
+    // console.log("onStarChange", id);
+    this.setState(state => {
+      const index = this.state.List.findIndex(elem => elem.id === id);
+      // console.log("Index = ", index);
+      const tmpList = this.state.List.slice();
+      tmpList[index].star = !tmpList[index].star;
+      return {
+        star: !this.tmpList
+      };
+    });
+  };
+
+  onAddContact = (name, address, telnumber, email, avatar) => {
+    let newContact = {
+      id: uuid(),
+      name: name,
+      address: address,
+      avatar: avatar,
+      phone: telnumber,
+      gender: "women",
+      email: email,
+      star: false
     };
 
-    render() {
-        return (
+    const newList = [...this.state.List, newContact];
+    this.onSaveData(newList);
+    this.setState(state => {
+      return {
+        List: newList
+      };
+    });
+    
+  };
 
+  onDeleteContact = id => {
+    const index = this.state.List.findIndex(elem => elem.id === id);
 
-            <div className="container">
-                <h1>Contact List</h1>
-                <div className="card card-default" id="card_contacts">
-                    <div id="contacts" className="panel-collapse collapse show" aria-expanded="true" >
-                        <ContactList Contact={this.state.Contact} onStarChange={this.onStarChange} />
-                    </div>
-                </div>
-            </div>
-        );
+    const partOne = this.state.List.slice(0, index);
+    const partTwo = this.state.List.slice(index + 1);
+    const newList = [...partOne, ...partTwo];
+    this.onSaveData(newList);
+    //console.log("NewList => ", newList);
+    this.setState(state => {
+      return {
+        List: newList
+      };
+    });
+  };
+
+  onEditContact = id => {
+    const index = this.state.List.findIndex(elem => elem.id === id);
+    const currentContact = this.state.List[index];
+    // console.log(currentContact);
+    this.setState({
+      currentContact: currentContact
+    });
+  };
+
+  async onSaveData(newList){
+    await fetch(this.URL,{
+      mathod: "POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body: JSON.stringify(newList)
+    }).then(response => {
+      console.log("response =>",response);
+      
+    })
+    .catch(err => console.log(err.Message))
+    //this.updateContactList();
+  };
+
+  onEditCurrentContact = (id, name, address, telnumber, email, avatar) => {
+    const index = this.state.List.findIndex(elem => elem.id === id);
+    let editedContact = {
+      id: id,
+      name: name,
+      address: address,
+      avatar: avatar,
+      phone: telnumber,
+      gender: "women",
+      email: email,
+      star: false
     };
+    const partOne = this.state.List.slice(0, index);
+    const partTwo = this.state.List.slice(index + 1);
+    const newList = [...partOne, editedContact, ...partTwo];
+    this.onSaveData(newList);
+    this.setState({
+      List: newList
+    });
+  };
+
+  onSearch = contactName => {
+    // console.log("contactName -> ", contactName);
+    this.setState({
+      findContact: contactName
+    });
+  };
+
+  onShowContactList = (List, findContact) => {
+    if (findContact.length === 0) {
+      return List;
+    }
+    return List.filter(item => {
+      return item.name.toLowerCase().indexOf(findContact.toLowerCase()) > -1;
+    });
+  };
+
+  render() {
+    const showContacts = this.onShowContactList(
+      this.state.List,
+      this.state.findContact
+    );
+    return (
+      <div className="container">
+        <div id="card_contacts">
+          <div
+            id="contacts"
+            className="panel-collapse collapse show"
+            aria-expanded="true"
+          >
+            <Router>
+              <Header onSearch={this.onSearch} />
+              <Switch>
+                <Route
+                  path="/"
+                  exact
+                  render={() => (
+                    <ContactList
+                      List={showContacts}
+                      onStarChange={this.onStarChange}
+                      onDeleteContact={this.onDeleteContact}
+                      onEditContact={this.onEditContact}
+                    />
+                  )}
+                />
+                <Route
+                  path="/contact"
+                  exact
+                  render={() => <AddContact onAddContact={this.onAddContact} />}
+                />
+                <Route
+                  path="/edit"
+                  exact
+                  render={() => (
+                    <EditContact
+                      currentContact={this.state.currentContact}
+                      onEditCurrentContact={this.onEditCurrentContact}
+                    />
+                  )}
+                />
+                <Route component={NotFound} />
+              </Switch>
+            </Router>
+          </div>
+        </div>
+      </div>
+    );
+  }
 }
 
-
-ReactDOM.render(<App />, document.getElementById('root'));
-
+ReactDOM.render(<App />, document.getElementById("root"));
